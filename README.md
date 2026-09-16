@@ -7,7 +7,7 @@
 </div>
 
 <p align="center">
-  <img src="picture/phenomix-overview.png" alt="Overview of the Phenomix framework and its downstream applications" width="800">
+  <img src="picture/phenomix-overview.png" alt="Overview of the Phenomix framework and its downstream applications" width="1200">
 </p>
 
 ## Overview
@@ -26,7 +26,7 @@ By providing mechanistic insights into compound-induced phenotypes, Phenomix hel
 ├── reactome.py             # Reactome hierarchy and pathway helpers
 ├── tutorial.ipynb          # End-to-end LINCS walkthrough
 ├── requirements.txt        # Recorded runtime dependency bounds
-├── assets/
+├── picture/
 │   └── phenomix-overview.png
 └── dataset/
     ├── RepCorrDF.xlsx      # Replicate-correlation support data
@@ -40,25 +40,21 @@ By providing mechanistic insights into compound-induced phenotypes, Phenomix hel
 
 ## Setup a Python virtual environment (recommended)
 
-* Create the virtual environment (in the env directory): 
-```$> python3.9 -m venv env```
+* Create the virtual environment: 
+```conda create -n phenomix_env python=3.9```
 
 * Activate the environment:
-```$> source env/bin/activate```
+```conda activate phenomix_env```
 
 * Install all the required packages in the virtual environment (this should take a few minutes):  
-```$> pip --no-cache-dir install -r install/requirements.txt```  
+```pip --no-cache-dir install -r requirements.txt```  
 Packages can also be installed individually using the versions 
-provided in the ```install/requirements.txt``` file; for example:
-```$> pip install pandas==1.3.5```
-
-* Set the ```PYTHONPATH``` as follows: ```export PYTHONPATH=${PYTHONPATH}:/path/to/cue```
-
-To deactivate the environment: ```$> deactivate```
+provided in the ```requirements.txt``` file; for example:
+```pip install pandas==1.3.5```
 
 ## Prepare the input data
 
-The LINCS and CDRP-bio datasets with matched gene expression and CP data used in our study are publicly available at [carpenter-singh-lab/2022_Haghighi_NatureMethods](https://github.com/carpenter-singh-lab/2022_Haghighi_NatureMethods).
+The LINCS and CDRP-bio datasets with matched gene expression and cell painting data used in our study are publicly available at [carpenter-singh-lab/2022_Haghighi_NatureMethods](https://github.com/carpenter-singh-lab/2022_Haghighi_NatureMethods).
 
 The loader recognizes the following dataset keys and directory names:
 

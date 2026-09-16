@@ -98,7 +98,7 @@ def moa_cp_explain_analysis(top10_cps):
         CP_MoA_pattern = 'Correlation'  
     return CP_MoA_pattern, CP_MoA_feature, CP_MoA_feature_occurrence_count
 
-def cp_moa_discovery(explain_data, target_class, explain_model, target_class_explain_data):
+def cp_moa_explanation(explain_data, target_class, explain_model, target_class_explain_data):
     top10_cps_columns = ['10th_important_cp', '9th_important_cp', '8th_important_cp', '7th_important_cp', '6th_important_cp','5th_important_cp', '4th_important_cp', '3rd_important_cp', '2nd_important_cp', '1st_important_cp']
     gene_and_cp_ig = IntegratedGradients(explain_model)
     gene_and_cp_attribution = gene_and_cp_ig.attribute(target_class_explain_data).detach().numpy()
@@ -111,7 +111,7 @@ def cp_moa_discovery(explain_data, target_class, explain_model, target_class_exp
     CP_MoA_pattern, CP_MoA_feature, CP_MoA_feature_occurrence_count = moa_cp_explain_analysis(top10_cps)
     return CP_MoA_pattern, CP_MoA_feature, CP_MoA_feature_occurrence_count, explain_data
 
-def gene_and_pathway_moa_discovery(explain_data, target_class, explain_model, target_class_explain_data):
+def gene_and_pathway_moa_explanation(explain_data, target_class, explain_model, target_class_explain_data):
     top10_pathways_columns = ['10th_important_pathway', '9th_important_pathway', '8th_important_pathway', '7th_important_pathway', '6th_important_pathway','5th_important_pathway', '4th_important_pathway','3rd_important_pathway', '2nd_important_pathway', '1st_important_pathway']
     top10_genes_columns = ['10th_important_gene', '9th_important_gene', '8th_important_gene', '7th_important_gene', '6th_important_gene','5th_important_gene', '4th_important_gene','3rd_important_gene', '2nd_important_gene', '1st_important_gene']
     gene_and_cp_ig = IntegratedGradients(explain_model)
@@ -140,7 +140,7 @@ def gene_and_pathway_moa_discovery(explain_data, target_class, explain_model, ta
     top10_genes = explain_model.reactome_knowledge.index[top10_genes].tolist()
     return top10_genes, top10_pathways, explain_data
 
-def moa_discovery(explain_data, target_class, explain_model, align_dict, reactome_pathway, EXPLAIN_FOR_INDIVIDUAL_DRUG=True):
+def moa_explanation(explain_data, target_class, explain_model, align_dict, reactome_pathway, EXPLAIN_FOR_INDIVIDUAL_DRUG=True):
     important_feature_columns = pd.DataFrame(np.zeros((explain_data.shape[0], 30)),
                                             index=explain_data.index, columns=['10th_important_cp', '9th_important_cp', '8th_important_cp', '7th_important_cp', '6th_important_cp','5th_important_cp', '4th_important_cp', '3rd_important_cp', '2nd_important_cp', '1st_important_cp',
                                             '10th_important_gene', '9th_important_gene', '8th_important_gene', '7th_important_gene', '6th_important_gene','5th_important_gene', '4th_important_gene','3rd_important_gene', '2nd_important_gene', '1st_important_gene',
@@ -150,13 +150,13 @@ def moa_discovery(explain_data, target_class, explain_model, align_dict, reactom
                                 == target_class].iloc[:, :-32]
     target_class_explain_data = torch.tensor(
         np.array(target_class_explain_data, dtype=np.float64), dtype=torch.float32)
-    CP_MoA_pattern, CP_MoA_feature, CP_MoA_feature_occurrence_count, explain_data = cp_moa_discovery(explain_data, target_class, explain_model, target_class_explain_data)
-    top10_genes, top10_pathways, explain_data = gene_and_pathway_moa_discovery(explain_data, target_class, explain_model, target_class_explain_data)
+    CP_MoA_pattern, CP_MoA_feature, CP_MoA_feature_occurrence_count, explain_data = cp_moa_explanation(explain_data, target_class, explain_model, target_class_explain_data)
+    top10_genes, top10_pathways, explain_data = gene_and_pathway_moa_explanation(explain_data, target_class, explain_model, target_class_explain_data)
     top10_pathways = [reactome_pathway.loc[reactome_pathway['reactome_id'] == i]['pathway_name'].values[0] for i in top10_pathways]
-    moa_discovery_result = {}
+    moa_explanation_result = {}
     moa_result = MoAResult()
     moa_result.CP_MoA_pattern, moa_result.CP_MoA_feature, moa_result.CP_MoA_feature_occurrence_count, moa_result.top10_genes, moa_result.top10_pathways= CP_MoA_pattern, CP_MoA_feature, CP_MoA_feature_occurrence_count, top10_genes, top10_pathways
-    moa_discovery_result[align_dict[target_class]] = moa_result
+    moa_explanation_result[align_dict[target_class]] = moa_result
     
     if EXPLAIN_FOR_INDIVIDUAL_DRUG:
         explain_data.iloc[:, -30:] = explain_data.iloc[:, -30:].astype('int32')
@@ -182,5 +182,5 @@ def moa_discovery(explain_data, target_class, explain_model, align_dict, reactom
             CP_MoA_pattern, CP_MoA_feature, CP_MoA_feature_occurrence_count = moa_cp_explain_analysis(top10_cps)
             moa_result = MoAResult()
             moa_result.CP_MoA_pattern, moa_result.CP_MoA_feature, moa_result.CP_MoA_feature_occurrence_count, moa_result.top10_genes, moa_result.top10_pathways= CP_MoA_pattern, CP_MoA_feature, CP_MoA_feature_occurrence_count, top10_genes, top10_pathways
-            moa_discovery_result[compound] = moa_result
-    return moa_discovery_result
+            moa_explanation_result[compound] = moa_result
+    return moa_explanation_result
